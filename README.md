@@ -10,3 +10,15 @@ Tornado router, routování na základě rootu v URI, včetně UI pro administra
     24. 1. 2021 počátek zkouškového období,
     31. 1. 2022 uzavření projektu,
     18. 3. 2022 konec zkouškového období. 
+
+    5.11. UI admin
+    12.11 api server
+    19. 11. UI(Client) server
+    26.11. Cookies(komunikace s Keycloak)
+    3.12 baleni do Dockeru
+    10.12 dokumentace
+    15.12 odevzdavani alfa verze
+    16.12-15.1. prace na Beta verzi (podle vysledku alfa verze)
+    15.1. odevzdani beta verze
+    16.1.-23.1. dokonceni projektu
+    24.1. odevzdavani hotoveho projektu a obhajoba
