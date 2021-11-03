@@ -40,13 +40,15 @@ class FetchStudent(tornado.web.RequestHandler):
 			
 						admin.admin(db_path,self)
 						
-
-					aport=findID(paths,parsed[0],0)
+					else:
+						aport=findID(paths,parsed[0],0)
 					
 
-					#self.write(parsed[0]  + " This part has not been programmed yet.")
-					#self.write("We want to send you data from"+paths[aport][2])
-								
+						self.write(parsed[0]  + " This part has not been programmed yet.")
+						self.write("We want to send you data from"+paths[aport][2])
+	
+	
+
 
 
 application = tornado.web.Application(route.get_routes(), {'some app': 'settings'})
