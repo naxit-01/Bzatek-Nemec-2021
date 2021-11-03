@@ -1,10 +1,11 @@
 import tornado.web
 from tornroutes import route
-import database
+from database import database
 from admin import admin
 
 g_port = 9999
-paths=database.connect_database('ROOT_server/database1.db')
+db_path='BN_v.0.1/ROOT_server/database/database1.db'
+paths=database.just_load_all(db_path)
 
 
 def current_user():
@@ -36,14 +37,15 @@ class FetchStudent(tornado.web.RequestHandler):
 					parsed=uri.split("/")
 
 					if(parsed[0]==paths[0][0]):
-						admin.admin(paths,self)
+			
+						admin.admin(db_path,self)
 						
 
 					aport=findID(paths,parsed[0],0)
 					
 
-					self.write(parsed[0]  + " This part has not been programmed yet.")
-					self.write("We want to send you data from"+paths[aport][2])
+					#self.write(parsed[0]  + " This part has not been programmed yet.")
+					#self.write("We want to send you data from"+paths[aport][2])
 								
 
 
