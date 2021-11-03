@@ -10,6 +10,7 @@ api_router = APIRouter()
 def root() -> dict:
     """
     Root GET
+    
     """
     return {"msg": "Hello, World!"}
 
