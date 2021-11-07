@@ -117,12 +117,11 @@ class FetchStudent(tornado.web.RequestHandler):
 			self.write("This part has not been programmed yet.")
 
 @route('/(.*)')
-class NotFound(tornado.web.RequestHandler):
+class PageNotFound(tornado.web.RequestHandler):
 	def get(self,uri):
 		parsed=uri.split("/")
 		if parsed[0] != "" and parsed[0] != "admin" and parsed[0] != "api" and parsed[0] != "ui":
-			# Vykreslit html s obrazkem smutneho stenatka, ktere nemuze najit maminku
-			self.write("Page not found")
+			self.render("templates/PageNotFound.html") # Doesnt render image, only text needs fixing
 
 application = tornado.web.Application(route.get_routes(), {'some app': 'settings'})
 
