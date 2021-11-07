@@ -4,9 +4,7 @@ from database import database
 from admin import *
 from moduls import *
 
-
-
-
+g_tmpKeycloak = -1
 g_port = 9999
 #db_path='BN_v.0.2/ROOT_server/database/database1.db'
 db_path='database/database1.db'
@@ -23,14 +21,26 @@ prototype1_route('/prototype1', 'generic.html', db_path, type='basic')
 admin_route('/admin', 'mainpage.html', db_path, type='basic')
 
 @route('/')
-class SomeHandler(tornado.web.RequestHandler):
+class RootHandler(tornado.web.RequestHandler):
 	def get(self):	
-
-		print("root get")
-		print(paths)
-		''' redirect to keycloak'''
-		self.write(self.request.cookies)
-		self.write("This part has not been programmed yet.")
+		#print("root get")
+		#print(paths)
+		'''
+		Zjistit prihlaseni, pokud neni hodit na keycloak, pokud je nacist default stranku (plati jen pro root)
+		Tuto cast vystipnout do funkce a pouzivat ve vsech routes, jen vzdy pokracovat na pozadovanou uri
+		'''
+		
+		#self.write(self.request.cookies)
+		#self.write("This part has not been programmed yet.")
+		global g_tmpKeycloak
+		if g_tmpKeycloak == -1:
+			g_tmpKeycloak = 1
+			# 5 je keycloak, je TMP struktura databaze se bude menit
+			self.redirect(paths[5][2] + ":" + str(paths[5][3]))
+		else:
+			# mit vlastni adresu v databazi, divne ne?, ale sel bych do toho
+			# zde by byla default adresa, nikdo krome / tu uz nebude
+			self.redirect("http://127.0.0.1:9999/ui/student/264")
 
 '''@route('/admin')
 class SomeHandler1(tornado.web.RequestHandler):
