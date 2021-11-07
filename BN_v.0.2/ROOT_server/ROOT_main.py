@@ -27,6 +27,7 @@ class SomeHandler(tornado.web.RequestHandler):
 	def get(self):	
 
 		print("root get")
+		print(paths)
 		''' redirect to keycloak'''
 		self.write(self.request.cookies)
 		self.write("This part has not been programmed yet.")
@@ -44,6 +45,7 @@ class SomeHandler1(tornado.web.RequestHandler):
 			self.write("This part has not been programmed yet.")
 		print("ad")'''
 
+'''
 @route(r'/(?P<parameterized>\w+)')
 class SomeParameterizedRequestHandler(tornado.web.RequestHandler):
     def get(self, parameterized):
@@ -51,39 +53,64 @@ class SomeParameterizedRequestHandler(tornado.web.RequestHandler):
 					
         #goto = self.reverse_url(parameterized)
         #self.redirect(goto)
-
 '''
-@route('/(.*)')
+@route('/api/(.*)')
+class Test(tornado.web.RequestHandler):
+	async def get(self,uri):
+		# must be logged (cookie)
+		parsed = uri.split("/")
+		information_type_index = -1
+		for i, path in enumerate(paths):
+			if path[0] == parsed[0]: # V databazi neni student/teacher/predmet -> pokud bude 1 api server, neni potreba resit
+				information_type_index = i
+				break
+		
+		if information_type_index == -1:
+			print("Error! Unknown request path")
+
+		# 2 je umisteni destination_ip v databazi, 3 je port, mozna lepsi integrovat do sebe uvnitr databaze
+		response = await get_request(paths[information_type_index][2] + ":" + str(paths[information_type_index][3]) + "/" + paths[information_type_index][0] + "/" + parsed[1])
+		self.write(response)
+
+@route('/ui/(.*)')
 class FetchStudent(tornado.web.RequestHandler):
 	async def get(self,uri):
-		print("multi get")
+		#print("multi get")
 		if not current_user():
 			self.redirect('/')
 		parsed=uri.split("/")
-		print(parsed)
+		
+		# Pouzit vyhledavani z api, udelat nezavislou funkci
+		if parsed[0] == "student":
+			#information_type_index = 4 Je potreba zmenit strukturu databaze na admin\ui\api a v pod tabulkach resit seznamy adres
+			ui_student = "http://127.0.0.1:9998"
+			# /student by slo pres paths[information_type_index][0], zase jako v hledani api
+			response = await get_request(ui_student + "/student/" + parsed[1])
+			self.write(response)
+		else:
+			print("Only student works.")
 
 		#NEFUNGUJE admin meni uri na "favicon.ico" todo: zjistit proc a jak se toho zbavit
-		
+		'''
 		if(parsed[0]!=paths[0][0]):
 			
 			aport=database.find_ID_in_database(db_path,parsed[0],0)
 					
 
-			self.write(parsed[0]  + " This part has not been programmed yet.")
-			self.write("We want to send you data from"+paths[aport][2])
-		
+			#self.write(parsed[0]  + " This part has not been programmed yet.")
+			self.write("We want to send you data from" + paths[aport][2])
+		'''
 	def post(self):
 		print("multi Post")
 		self.write("This part has not been programmed yet.")
 		if self.get_argument("edit_btn", None) != None:
 			self.write("This part has not been programmed yet.")
-'''
 
 
 application = tornado.web.Application(route.get_routes(), {'some app': 'settings'})
 
 if __name__ == "__main__":
 	application.listen(g_port)
-	print("Client_sample running on port: " + str(g_port) + "...")
+	print("Router_tornado running on port: " + str(g_port) + "...")
 	tornado.ioloop.IOLoop.instance().start()
 	

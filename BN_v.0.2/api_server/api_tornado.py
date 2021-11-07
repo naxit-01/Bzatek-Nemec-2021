@@ -3,15 +3,14 @@ import tornado.web
 from moduls import * # Contains a module for asynchronous requests
 from tornroutes import route, prototype_route
 
-g_port=9998
-g_router="http://127.0.0.1:9999"
+g_port=9997
 
 @route('/(.*)')
 class mainPage(tornado.web.RequestHandler):
 	async def get(self, uri):
-		'''Ask router for api data'''
-		response = await get_request(g_router + "/api/" + uri)
-		self.write("Data o uzivateli: " + response)
+		'''Return data to router'''
+		parsed = uri.split("/")
+		self.write("Data about " + parsed[0] + " with ID: " + parsed[1])
 
 application = tornado.web.Application([
     (r"/(.*)", mainPage)
@@ -19,5 +18,5 @@ application = tornado.web.Application([
 
 if __name__ == "__main__":
 	application.listen(g_port)
-	print("UI_tornado running on port: " + str(g_port) + "...")
+	print("API_tornado running on port: " + str(g_port) + "...")
 	tornado.ioloop.IOLoop.instance().start()
