@@ -8,7 +8,8 @@ from moduls import *
 
 
 g_port = 9999
-db_path='BN_v.0.2/ROOT_server/database/database1.db'
+#db_path='BN_v.0.2/ROOT_server/database/database1.db'
+db_path='database/database1.db'
 paths=database.just_load_all(db_path)
 
 
