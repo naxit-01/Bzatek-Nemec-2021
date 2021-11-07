@@ -11,7 +11,12 @@ class mainPage(tornado.web.RequestHandler):
 		self.render("templates/loginPage.html")
 
 	def post(self, uri):
-		#Vystavit cookie
+		#Setting up cookie
+		if not self.get_cookie("mycookie"):
+			self.set_cookie("mycookie", "UserName") # Neni secure, jen testovaci
+			print("Your cookie was not set yet! Did it now.")
+		else:
+			print("Your cookie was set!")
 		self.redirect(g_router + "/" + uri)
 
 application = tornado.web.Application([

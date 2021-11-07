@@ -4,16 +4,16 @@ from database import database
 from admin import *
 from moduls import *
 
-g_tmpKeycloak = -1
 g_port = 9999
 #db_path='BN_v.0.2/ROOT_server/database/database1.db'
 db_path='database/database1.db'
 paths=database.just_load_all(db_path)
 
 
-def current_user():
+def current_user(self):
 	#pokud uzivatel nebyl authorizovan presmeruje na auth serrve, pokud prilozil cookies, cookies bude overeno a ziskano id user
-    return True
+	return self.get_cookie("mycookie")
+    #return True
 
 
 prototype_route('/prototype', 'generic.html')
@@ -30,17 +30,17 @@ class RootHandler(tornado.web.RequestHandler):
 		Tuto cast vystipnout do funkce a pouzivat ve vsech routes, jen vzdy pokracovat na pozadovanou uri
 		'''
 		
-		#self.write(self.request.cookies)
-		#self.write("This part has not been programmed yet.")
-		global g_tmpKeycloak
-		if g_tmpKeycloak == -1:
-			g_tmpKeycloak = 1
+		if current_user(self) == None:
 			# 5 je keycloak, je TMP struktura databaze se bude menit
 			self.redirect(paths[5][2] + ":" + str(paths[5][3]))
-		else:
-			# mit vlastni adresu v databazi, divne ne?, ale sel bych do toho
-			# zde by byla default adresa, nikdo krome / tu uz nebude
-			self.redirect("http://127.0.0.1:9999/ui/student/264")
+			return
+		print("Logged in as: " + self.get_cookie("mycookie"))
+		# mit vlastni adresu v databazi, divne ne?, ale sel bych do toho
+		# zde by byla default adresa, nikdo krome / tu uz nebude
+		self.redirect("http://127.0.0.1:9999/ui/student/264")
+		
+		#self.write(self.request.cookies)
+		#self.write("This part has not been programmed yet.")
 
 '''@route('/admin')
 class SomeHandler1(tornado.web.RequestHandler):
@@ -86,8 +86,10 @@ class Test(tornado.web.RequestHandler):
 class FetchStudent(tornado.web.RequestHandler):
 	async def get(self,uri):
 		#print("multi get")
+		'''
 		if not current_user():
 			self.redirect('/')
+		'''
 		parsed=uri.split("/")
 		
 		# Pouzit vyhledavani z api, udelat nezavislou funkci
