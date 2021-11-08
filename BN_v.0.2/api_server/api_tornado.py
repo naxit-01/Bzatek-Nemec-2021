@@ -10,6 +10,8 @@ class mainPage(tornado.web.RequestHandler):
 	async def get(self, uri):
 		'''Return data to router'''
 		parsed = uri.split("/")
+		if self.request.arguments != None:
+			print(self.request.arguments)
 		self.write("Data about " + parsed[0] + " with ID: " + parsed[1])
 
 application = tornado.web.Application([

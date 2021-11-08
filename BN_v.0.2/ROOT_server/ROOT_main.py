@@ -27,7 +27,12 @@ def createUrl(index):
 	# Pokud se zmeni databaze nutno zmenit druhy argument
 	# 2 je umisteni destination_ip v databazi, 3 je port
 	return "http://" + paths[index][2] + ":" + str(paths[index][3]) + '/'
-	
+
+def binaryToString(binaryDict):
+	stringDict = {}
+	for key, value in binaryDict.items():
+		stringDict[key] = str(value)
+	return stringDict
 
 prototype_route('/prototype', 'generic.html')
 prototype1_route('/prototype1', 'generic.html', db_path, type='basic')
@@ -85,7 +90,13 @@ class ApplicationProgrammingInterface(tornado.web.RequestHandler):
 		parsed = uri.split("/")
 		index = findIndex(self, parsed[0])
 
-		response = await get_request(createUrl(index) + paths[index][0] + "/" + parsed[1])
+		if self.request.arguments != None:
+			print("pred sendem")
+			data = binaryToString(self.request.arguments) #dict value byla binarne a nesla poslat jako param
+			response = await get_request_with_params(createUrl(index) + paths[index][0] + "/" + parsed[1], data)
+		else:
+			print("here")
+			response = await get_request(createUrl(index) + paths[index][0] + "/" + parsed[1])
 		self.write(response)
 
 @route('/ui/(.*)')
@@ -97,12 +108,17 @@ class UserInterface(tornado.web.RequestHandler):
 			parsed = uri.split("/")
 			index = findIndex(self, parsed[0])
 			
+			#if parsed[1] == None, pouzit id v cookie
 			#Databaze je v upravach, pozdeji odkomentovat
 			#response = await get_request(createUrl(index) + paths[index][0] + "/" + parsed[1])
 			
 			if parsed[0] == "student":
 				ui_student = "http://127.0.0.1:9998/student/"
 				response = await get_request(ui_student + parsed[1])
+				self.write(response)
+			elif parsed[0] == "rozvrh":
+				ui_rozvrh = "http://127.0.0.1:9998/rozvrh/"
+				response = await get_request(ui_rozvrh + parsed[1])
 				self.write(response)
 			elif parsed[0] == "ucitel": # Stejne nefunguje, nema jeho adresu v databazi a v api neni osetreno
 				ui_ucitel = "http://127.0.0.1:9998/ucitel/"

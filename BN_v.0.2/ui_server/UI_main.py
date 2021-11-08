@@ -10,8 +10,18 @@ g_router="http://127.0.0.1:9999"
 class mainPage(tornado.web.RequestHandler):
 	async def get(self, uri):
 		'''Ask router for api data'''
-		response = await get_request(g_router + "/api/" + uri)
-		self.write("Data o uzivateli: " + response)
+
+		parsed = uri.split("/")
+		if parsed[0] == "rozvrh":
+			data = {
+				'datum':"1.1.2022",
+				'type':"prednasky"
+			}
+			response = await get_request_with_params(g_router + "/api/" + uri, data)
+			self.write("Data o uzivateli: " + response)
+		else:
+			response = await get_request(g_router + "/api/" + uri)
+			self.write("Data o uzivateli: " + response)
 
 application = tornado.web.Application([
     (r"/(.*)", mainPage)
