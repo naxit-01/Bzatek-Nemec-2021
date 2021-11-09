@@ -35,11 +35,15 @@ def readTableColumns(database, tablename):
     return columns
 
 def addTableRow(database, tablename):
+    columns=readTableColumns(database, tablename)
+    command="INSERT INTO "+tablename+" VALUES ("
+    for key in enumerate(columns):
+        command+="'',"
+    command = command[:-1]
+    command+=")"
+
     con=connect_database(database)
     cur= con.cursor()
-    command="INSERT INTO "+tablename+" VALUES ('','','','')"
-
-
     try: cur.execute(command)
     except: print("kolize v id")
     con.commit()
