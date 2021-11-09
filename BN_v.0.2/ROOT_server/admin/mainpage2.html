@@ -94,8 +94,8 @@
                                 <th class="tg-0pky"><strong>{{ value }}</strong></th>
                             {% end %}
                             <th class="tg-0pky">
-                                <button name={{str("Edit_button"+table["tableName"]+row[table["PK"]])}} class="edit1-btn">{{str("Edit_button"+table["tableName"]+row[table["PK"]])}}</button>
-                                <button name={{str("Delete_button"+table["tableName"]+row[table["PK"]])}} class="del-btn">{{str("Delete_button"+table["tableName"]+row[table["PK"]])}}</button>
+                                <button name={{str("Edit_button"+table["tableName"]+row[table["PK"]])}} class="edit1-btn">Edit</button>
+                                <button name={{str("Delete_button"+table["tableName"]+row[table["PK"]])}} class="del-btn">Delete</button>
                             </th>
                         {% else %}
                             {% for i,value in enumerate(row) %}
@@ -104,15 +104,15 @@
                                 </td>
                             {% end %}
                             <th class="tg-0pky">
-                                <button name={{str("Save_button"+table["tableName"]+row[table["PK"]])}} class="edit1-btn">{{str("Save_button"+table["tableName"]+row[table["PK"]])}}</button>
-                                <button name={{str("Delete_button"+table["tableName"]+row[table["PK"]])}} class="del-btn">{{str("Delete_button"+table["tableName"]+row[table["PK"]])}}</button>
+                                <button name={{str("Save_button"+table["tableName"]+row[table["PK"]])}} class="edit1-btn">Save</button>
+                                <button name={{str("Delete_button"+table["tableName"]+row[table["PK"]])}} class="del-btn">Delete</button>
                             </th>
                         {% end %}
                     </tr>
                 {% end %}
                 <tr>
                     <th class="tg-0pky" colspan={{ len(table["tableColumns"]) }}>
-                        <button name={{str("Add_button"+table["tableName"])}} class="add-btn">{{str("Add_button"+table["tableName"])}}</button>
+                        <button name={{str("Add_button"+table["tableName"])}} class="add-btn">Add</button>
                     </th> 
                 </tr>
             </tbody>
