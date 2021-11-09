@@ -3,93 +3,69 @@ from tornroutes import route
 import tornado.ioloop
 import tornado.web
 
+def TmpltDtbs(db_path,tableNames):
+            dtbs=[]
+            for i,tableName in enumerate(tableNames):
+                table={
+                    "tableName":tableName,
+                    "tableRows":'',
+                    "tableColumns":'', 
+                    "editID":[],
+                    "PK":database.findPK(db_path,tableName)
+                    }
+                dtbs.append(table)
 
+            return dtbs
 
-def admin_route(uri, template, db_path, type):
-    print("Admin route")
+def showPage(self):
+    for i, table in enumerate(self._dtbs):
+        table["tableRows"]=database.readTableRows(self._db_path,table["tableName"])
+        table["tableColumns"]=database.readTableColumns(self._db_path,table["tableName"])
+
+    self.render(self._template, database=self._dtbs)
+
+def admin_route(uri, template, db_path):
     @route(uri, name=uri)
-    class generic_handler(tornado.web.RequestHandler):
+    class admin_handler(tornado.web.RequestHandler):
+        
+        _dtbs=TmpltDtbs(db_path,database.readTableNames(db_path))
         _template = template
         _db_path = db_path
-        _type = type
-        def args_to_dict(self):
-            """ This method converts request arguments to
-            usable dict 
-            """
-            params = self.request.arguments
-            for k,v in params.items():
-                params[k] = v[0].decode("utf-8")
-            return params
 
         def get(self):
-
-            connection=database.connect_database(self._db_path)
-
-            database.insert_into_table(connection)
-
-            paths=database.select_all_tasks(connection)
-            columns=database.sellect_all_columns(connection)
-    
-            database.close_connection(connection)
-
-
-
-            return self.render(self._template, paths=paths, columns=columns, type=self._type)
-
+            showPage(self)
+        
         def post(self):
-            print("POST")
-            # This will return all arguments as dict.
-            hope=self.request.arguments 
-            # Decode the value of each key to str
-            # from byte.
-            #self.request.arguments[key][0].decode('utf-8')
-            # Params as dict.
-            params_in_hash = self.args_to_dict()
+            for i,table in enumerate(self._dtbs):
+                table["PK"]=database.findPK(self._db_path,table["tableName"])
+                for row in database.readTableRows(self._db_path,table["tableName"]):
 
-            if self.get_argument("Edit_button", None) != None:
-                
-                print("TLACITKO\n")
+                    if(self.get_argument(str("Edit_button"+table["tableName"]+row[table["PK"]]), None) != None):
+                        table["editID"].append(row[table["PK"]])
+
+                        showPage(self)
             
-            if self.get_argument("Add_button", None) != None:
+                    if(self.get_argument(str("Save_button"+table["tableName"]+row[table["PK"]]), None) != None):
+                        task=[]                    
+                        for i in range(len(table["tableColumns"])):
+                            task.append(self.get_argument(str("input"+table["tableName"]+row[table["PK"]]+str(i))))
+                        task.append(str(row[table["PK"]]))
+                        database.updateTableRow(self._db_path,table["tableName"], task)
+                        table["editID"].remove(row[table["PK"]])
+
+                        showPage(self)
                 
-                print("TLACITKO\n")
+                    if(self.get_argument(str("Delete_button"+table["tableName"]+row[table["PK"]]), None) != None):                       
+                        database.deleteTableRow(self._db_path, table["tableName"], row[table["PK"]])
+                        try: table["editID"].remove(row[table["PK"]])
+                        except: print("nebylo v editID")
 
-    return generic_handler
+                        showPage(self)
 
-def admin(db_path, self, type):
+                if self.get_argument(str("Add_button"+table["tableName"]), None) != None:
+                    database.addTableRow(self._db_path,table["tableName"])
 
-    connection=database.connect_database(db_path)
+                    showPage(self)
+			    
+    return admin_handler
 
-    database.insert_into_table(connection)
-
-    paths=database.select_all_tasks(connection)
-    columns=database.sellect_all_columns(connection)
-    
-    database.close_connection(connection)
-    self.render("mainpage.html", paths=paths, columns=columns, user=True, type=type)    
-
-def prototype1_route(uri, template, db_path, type):
-    print("Prototype1 route")
-    @route(uri, name=uri)
-    class generic_handler(tornado.web.RequestHandler):
-        _template = template
-        _db_path = db_path
-        _type = type
-
-        def get(self):
-            connection=database.connect_database(self._db_path)
-
-            database.insert_into_table(connection)
-
-            paths=database.select_all_tasks(connection)
-            columns=database.sellect_all_columns(connection)
-    
-            database.close_connection(connection)
-
-
-            return self.render(self._template, paths=paths, columns=columns, type=self._type)
-        def post(self):
-            print("button")
-
-
-    return generic_handler

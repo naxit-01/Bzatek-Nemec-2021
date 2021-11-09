@@ -1,6 +1,4 @@
-# loading in modules
 import sqlite3
-import os
 # Create a SQL connection to our SQLite database 
 def connect_database(database):  
     return sqlite3.connect(database) 
@@ -8,57 +6,89 @@ def connect_database(database):
 def close_connection(con):
     con.close()
 
-def just_load_all(database):
-    con = connect_database(database)
-    aport=select_all_tasks(con)
+def readTableNames(database):
+    con=connect_database(database)
+    res = con.execute("SELECT name FROM sqlite_master WHERE type='table';")
+    tablenames = []
+    for name in res.fetchall():
+        tablenames.append(name[0])
     close_connection(con)
-    return aport
+    return tablenames
 
-def select_all_tasks(con):
-    """
-    Query all rows in the tasks table
-    :param conn: the Connection object
-    :return:
-    """
-    cur = con.cursor()
-    cur.execute("SELECT * FROM paths")
+def readTableRows(database, tablename):
+    con=connect_database(database)
+    cur=con.cursor()
+    query = "SELECT * FROM "+tablename
+    cur.execute(query)
+    tasks = cur.fetchall()
+    close_connection(con)
+    return tasks
 
-    rows = cur.fetchall()
+def readTableColumns(database, tablename):
+    con=connect_database(database)
+    cur=con.cursor()
+    res=cur.execute("SELECT * FROM "+tablename).description
+    columns =[]
+    for name in res:
+        columns.append(name[0])
+    close_connection(con)
+    return columns
 
-    return rows
+def addTableRow(database, tablename):
+    con=connect_database(database)
+    cur= con.cursor()
+    command="INSERT INTO "+tablename+" VALUES ('','','','')"
 
-def sellect_all_columns(con):
-    #cursor = con.cursor()
-    #data=cursor.execute('''SELECT * FROM table_name''')
-    #print(data.description)
-    return con.cursor().execute('''SELECT * FROM paths''').description
 
-def create_table(database):
+    try: cur.execute(command)
+    except: print("kolize v id")
+    con.commit()
+    close_connection(con)
+
+def updateTableRow(database, tablename,data):
+    columns=readTableColumns(database, tablename)
+    command="UPDATE "+tablename+" SET "
+    for i,key in enumerate(columns):
+        command+=columns[i]+" = ? ,"
+    command = command[:-1]
+    command+=" WHERE id = ?"
+
     con=connect_database(database)
     cur = con.cursor()
-    cur.execute("""CREATE TABLE admins (
-                firstName text,
-                lastName text,
-                PIN integer
-                )""")
+    try: cur.execute(command,data)
+    except: print("kolize v id")
     con.commit()
     close_connection(con)
-    
-def insert_into_table(con):
-    
 
-    paths=select_all_tasks(con)
-    for i,key in enumerate(paths):
-        pass
-
-    cur= con.cursor()
-    cur.execute("INSERT INTO paths VALUES ('uistudent','05','128.234.01.02','5000')")
+def deleteTableRow(database, tablename, id):
+    con=connect_database(database)
+    cur = con.cursor()
+    cur.execute("DELETE FROM "+ tablename +" WHERE id=?", (id,))
     con.commit()
+    close_connection(con)
 
+def findPK(database, tablename):
+    con=connect_database(database)
+    cur = con.cursor()
+    command="PRAGMA table_info("+tablename+")"
+    cur.execute(command)
+    tasks = cur.fetchall()
+    close_connection(con)
+    for i,column in enumerate(tasks):
+        if column[5]==1:
+            return i
 
-def find_ID_in_database(database,arg,position):
+    return 0
+
+def getNewID():
+    return str(5)
+
+def doesIdExist():
+    return True
+    
+def find_ID_in_database(database, tablename, arg,position):
     con = connect_database(database)
-    list=select_all_tasks(con)
+    list=readTableRows(database, tablename)
     con = close_connection(con)
 
     for i,record in enumerate(list):

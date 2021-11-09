@@ -85,21 +85,6 @@ class route(object):
 #            ...
 
 
-def prototype_route(uri, template, handler = None):
-    print("Generic route")
-    h_ = handler or tornado.web.RequestHandler
-    @route(uri, name=uri)
-    class generic_handler(h_):
-        _template = template
-        def get(self):
-            return self.render(self._template)
-        def post(self):
-            print("button")
-
-
-
-    return generic_handler
-
 def route_redirect(from_, to, name=None):
     print("route_redirect")
     route._routes.append(tornado.web.url(

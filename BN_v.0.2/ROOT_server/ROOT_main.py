@@ -1,13 +1,18 @@
 import tornado.web
-from tornroutes import route, prototype_route
+from tornroutes import route
 from database import database
 from admin import *
 from moduls import *
 
 g_port = 9999
-#db_path='BN_v.0.2/ROOT_server/database/database1.db'
-db_path='database/database1.db'
-paths=database.just_load_all(db_path)
+db_path='BN_v.0.2/ROOT_server/database/database1.db'
+#db_path='database/database1.db'
+
+paths=database.readTableRows(db_path, "paths")
+
+admin_route('/admin', 'mainpage2.html', db_path)
+
+
 
 def current_user(self):
 	#Returns None if user isnt authenticated by a cookie
@@ -34,9 +39,6 @@ def binaryToString(binaryDict):
 		stringDict[key] = str(value)
 	return stringDict
 
-prototype_route('/prototype', 'generic.html')
-prototype1_route('/prototype1', 'generic.html', db_path, type='basic')
-admin_route('/admin', 'mainpage.html', db_path, type='basic')
 
 @route('/')
 class RootHandler(tornado.web.RequestHandler):
@@ -56,28 +58,7 @@ class RootHandler(tornado.web.RequestHandler):
 		#self.write(self.request.cookies)
 		#self.write("This part has not been programmed yet.")
 
-'''@route('/admin')
-class SomeHandler1(tornado.web.RequestHandler):
-	def get(self):	
-		print("admin get")
-		admin.admin(db_path,self,type='basic')
-		
 
-	async def post(self):
-		print("admin post")
-		if self.get_argument("edit_btn", None) != None:
-			self.write("This part has not been programmed yet.")
-		print("ad")'''
-
-'''
-@route(r'/(?P<parameterized>\w+)')
-class SomeParameterizedRequestHandler(tornado.web.RequestHandler):
-    def get(self, parameterized):
-					print(parameterized)
-					
-        #goto = self.reverse_url(parameterized)
-        #self.redirect(goto)
-'''
 @route('/api/(.*)')
 class ApplicationProgrammingInterface(tornado.web.RequestHandler):
 	async def get(self,uri):
@@ -127,22 +108,6 @@ class UserInterface(tornado.web.RequestHandler):
 			else:
 				print("Only student and teacher work, only improvised.")
 
-		# Vojtuv bordel
-		#NEFUNGUJE admin meni uri na "favicon.ico" todo: zjistit proc a jak se toho zbavit
-		'''
-		if(parsed[0]!=paths[0][0]):
-			
-			aport=database.find_ID_in_database(db_path,parsed[0],0)
-					
-
-			#self.write(parsed[0]  + " This part has not been programmed yet.")
-			self.write("We want to send you data from" + paths[aport][2])
-		
-	def post(self):
-		print("multi Post")
-		self.write("This part has not been programmed yet.")
-		if self.get_argument("edit_btn", None) != None:
-			self.write("This part has not been programmed yet.")'''
 
 @route('/(.*)')
 class PageNotFound(tornado.web.RequestHandler):
