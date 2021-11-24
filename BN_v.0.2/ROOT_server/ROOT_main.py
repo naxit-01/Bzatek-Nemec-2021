@@ -3,6 +3,7 @@ from tornroutes import route
 from database import database
 from admin import *
 from moduls import *
+import os
 
 g_port = 9999
 db_path='BN_v.0.2/ROOT_server/database/database1.db'
@@ -10,8 +11,7 @@ db_path='BN_v.0.2/ROOT_server/database/database1.db'
 
 paths=database.readTableRows(db_path, "paths")
 
-admin_route('/admin', 'mainpage2.html', db_path)
-
+admin_route('/admin', 'template/mainpage.html', db_path)
 
 
 def current_user(self):
@@ -116,7 +116,7 @@ class PageNotFound(tornado.web.RequestHandler):
 		if parsed[0] != "" and parsed[0] != "admin" and parsed[0] != "api" and parsed[0] != "ui":
 			self.render("templates/PageNotFound.html") # Doesnt render image, only text, needs fixing
 
-application = tornado.web.Application(route.get_routes(), {'some app': 'settings'})
+application = tornado.web.Application(route.get_routes(), {'some app': 'settings'}, static_path=os.path.join(os.path.dirname(__file__), "admin/statics") )
 
 if __name__ == "__main__":
 	application.listen(g_port)

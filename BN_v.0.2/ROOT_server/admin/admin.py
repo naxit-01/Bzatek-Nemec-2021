@@ -65,6 +65,7 @@ def admin_route(uri, template, db_path):
                 if self.get_argument(str("Add_button"+table["tableName"]), None) != None:
                     database.addTableRow(self._db_path,table["tableName"])
 
+
                     showPage(self)
 			    
     return admin_handler
