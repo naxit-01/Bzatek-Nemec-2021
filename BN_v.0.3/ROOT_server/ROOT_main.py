@@ -1,37 +1,49 @@
-from moduls import *
 import os
+from moduls import *
 
 g_port = 9999
+
 dbHndlr=DBHandler(os.path.join(os.path.dirname(__file__), "static/database.db"))
 
 paths=dbHndlr.readTableRows("paths")
+uis=dbHndlr.readTableRows("uis")
+apis=dbHndlr.readTableRows("apis")
 
+'''
+pomocne funkce zabalit do moduls, mozna pribalit i tabulky vyse
+problemy: pomocne funkce potrebuji tabulky a je nutno je importovat za ne (sem), zaroven DBHandler je v modulu (potreba importovat pred nim)
+mozna vytvorit hlavnni modul ktery importuje ostatni a vytvori tabulky, sem do main pote importovat jen ten hlavni?
+'''
 
 def current_user(self):
 	#Returns None if user isnt authenticated by a cookie
 	return self.get_cookie("mycookie")
 
 def authenticate(self, uri):
-	# 5 je keycloak, je TMP struktura databaze se bude menit
-	self.redirect(paths[5][2] + ":" + str(paths[5][3]) + "/" + uri)
+	# 4 je keycloak, keycloak musi byt v paths nebo zmenit zde
+	if uri == None:
+		self.redirect(paths[4][2] + ":" + str(paths[4][3]))
+	else:
+		self.redirect(paths[4][2] + ":" + str(paths[4][3]) + "/" + uri)
 
-def findIndex(self, keyword):
-	for i, path in enumerate(paths):
-		if path[0] == keyword:
-			return i
-	self.redirect("/404")
+def findIndex(self, keyword, table):
+	try:
+		for i, tableRow in enumerate(table):
+			if tableRow[0] == keyword:
+				return i
+	except:
+		print("findIndex: Could not find page in database.")
+		self.redirect("/404")
 
-def createUrl(index):
-	# Pokud se zmeni databaze nutno zmenit druhy argument
+def createUrl(index, table):
 	# 2 je umisteni destination_ip v databazi, 3 je port
-	return "http://" + paths[index][2] + ":" + str(paths[index][3]) + '/'
+	return "http://" + table[index][2] + ":" + str(table[index][3]) + '/'
 
 def binaryToString(binaryDict):
 	stringDict = {}
 	for key, value in binaryDict.items():
 		stringDict[key] = str(value)
 	return stringDict
-
 
 admin_route('/admin', "adminpage.html", dbHndlr)
 
@@ -40,39 +52,32 @@ class RootHandler(tornado.web.RequestHandler):
 	def get(self):
 		'''
 		Zjistit prihlaseni, pokud neni hodit na keycloak, pokud je nacist default stranku (plati jen pro root)
-		Tuto cast vystipnout do funkce a pouzivat ve vsech routes, jen vzdy pokracovat na pozadovanou uri
 		'''
 		if not current_user(self):
 			authenticate(self,None)
 		else:
 			print("Logged in as: " + self.get_cookie("mycookie"))
-		# mit vlastni adresu v databazi, divne ne?, ale sel bych do toho
-		# zde by byla default adresa, nikdo krome / tu uz nebude
-			self.redirect("http://127.0.0.1:9999/ui/student/264")
-		
-		#self.write(self.request.cookies)
-		#self.write("This part has not been programmed yet.")
 
+		# default adresa, nikdo krome / tu uz nebude
+			self.redirect("http://127.0.0.1:9999/ui/student/264")
 
 @route('/api/(.*)')
 class ApplicationProgrammingInterface(tornado.web.RequestHandler):
 	async def get(self,uri):
 		'''
-		Nema cookie, protoze neni user, ale ui server s jinou ip
-		print(self.request.remote_ip) Nevraci port, jen ip. Pro localhost nepouzitelne
-		'''
-		'''if not current_user(self):
+		Nema cookie, protoze neni user, ale ui server s jinou ip, autentizovat pres keycloak
+		
+		if not current_user(self):
 			authenticate(self,"api/" + uri)'''
+
 		parsed = uri.split("/")
-		index = findIndex(self, parsed[0])
+		index = findIndex(self, parsed[0], apis)
 
 		if self.request.arguments != None:
-			print("pred sendem")
 			data = binaryToString(self.request.arguments) #dict value byla binarne a nesla poslat jako param
-			response = await get_request_with_params(createUrl(index) + paths[index][0] + "/" + parsed[1], data)
+			response = await get_request_with_params(createUrl(index, apis) + apis[index][0] + "/" + parsed[1], data)
 		else:
-			print("here")
-			response = await get_request(createUrl(index) + paths[index][0] + "/" + parsed[1])
+			response = await get_request(createUrl(index, apis) + apis[index][0] + "/" + parsed[1])
 		self.write(response)
 
 @route('/ui/(.*)')
@@ -82,34 +87,21 @@ class UserInterface(tornado.web.RequestHandler):
 			authenticate(self,"ui/" + uri)
 		else:
 			parsed = uri.split("/")
-			index = findIndex(self, parsed[0])
+			index = findIndex(self, parsed[0], uis)
 			
-			#if parsed[1] == None, pouzit id v cookie
-			#Databaze je v upravach, pozdeji odkomentovat
-			#response = await get_request(createUrl(index) + paths[index][0] + "/" + parsed[1])
-			
-			if parsed[0] == "student":
-				ui_student = "http://127.0.0.1:9998/student/"
-				response = await get_request(ui_student + parsed[1])
-				self.write(response)
-			elif parsed[0] == "rozvrh":
-				ui_rozvrh = "http://127.0.0.1:9998/rozvrh/"
-				response = await get_request(ui_rozvrh + parsed[1])
-				self.write(response)
-			elif parsed[0] == "ucitel": # Stejne nefunguje, nema jeho adresu v databazi a v api neni osetreno
-				ui_ucitel = "http://127.0.0.1:9998/ucitel/"
-				response = await get_request(ui_ucitel + parsed[1])
-				self.write(response)
-			else:
-				print("Only student and teacher work, only improvised.")
+			# pouzit id v cookie a smazat(prepsat) nasledujici
+			if len(parsed) == 1:
+				parsed.insert(1, "264")
 
+			response = await get_request(createUrl(index, uis) + uis[index][0] + "/" + parsed[1])
+			self.write(response)
 
 @route('/(.*)')
 class PageNotFound(tornado.web.RequestHandler):
 	def get(self,uri):
 		parsed=uri.split("/")
 		if parsed[0] != "" and parsed[0] != "admin" and parsed[0] != "api" and parsed[0] != "ui":
-			self.render("PageNotFound.html") # Doesnt render image, only text, needs fixing
+			self.render("PageNotFound.html")
 
 application = tornado.web.Application(
 	route.get_routes(),
