@@ -1,0 +1,34 @@
+
+
+        /* demo styles */
+        @import url(https://fonts.googleapis.com/css?family=Roboto:400,500,300,700);
+        body{
+            background: -webkit-linear-gradient(left, #25c481, #25b7c4);
+            background: linear-gradient(to right, #25c481, #25b7c4);
+            font-family: 'Roboto', sans-serif;
+            margin: 50px;
+            }
+        /* for custom scrollbar for webkit browser*/
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        } 
+        ::-webkit-scrollbar-track {
+            -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); 
+        } 
+        ::-webkit-scrollbar-thumb {
+            -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); 
+        }
+
+        label { 
+          font-size: 100%; 
+          line-height: 50px;
+          text-transform: uppercase;
+          color: #fff;
+          transition: all .3s ease-in;
+          opacity: 0;
+          
+          cursor: pointer;
+        }
+        
+        
