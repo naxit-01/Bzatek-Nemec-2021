@@ -1,5 +1,6 @@
 import os
 from moduls import *
+import json
 
 g_port = 9999
 
@@ -14,6 +15,15 @@ def current_user(self):
 	}
 	return user
 
+def createToken(self):
+	if current_user(self)['type']=='admin': return "asdfadmin"
+	if current_user(self)['type']=='teacher': return "asdfteacher"
+	if current_user(self)['type']=='student': return "asdfstudent"
+
+	#!!!! vyresit cookie u api
+	return "asdfadmin"
+
+
 admin_route('/admin', "adminpage.html", dbHndlr)
 
 @route('/')
@@ -25,32 +35,35 @@ class RootHandler(tornado.web.RequestHandler):
 		if not current_user(self)['id']:
 			authenticate(self,None, dbHndlr)
 		else:
-			print("Logged in as: " + self.get_cookie("UserID") + self.get_cookie("UserType") )
-
-		# default adresa, nikdo krome / tu uz nebude
-			self.redirect("http://127.0.0.1:9999/ui/student/264")
+			print("Logged in as: " + self.get_cookie("UserID") + self.get_cookie("UserType"))
+		
+		self.redirect("http://127.0.0.1:9999/ui/student/"+str(current_user)(self)['id'])
 
 @route('/api/(.*)')
 class ApplicationProgrammingInterface(tornado.web.RequestHandler):
 	async def get(self,uri):
 		'''
 		Nema cookie, protoze neni user, ale ui server s jinou ip, autentizovat pres keycloak
-		
+		!!!! vyresit cookie
 		if not current_user(self):
 			authenticate(self,"api/" + uri)'''
 
 		parsed = uri.split("/")
-		index = dbHndlr.findIndex(parsed[0], "uis")
+		index = dbHndlr.findIndex(parsed[0], "apis")
 			
 		if index==None:
 			print("findIndex: Could not find page in database.")
 			self.redirect("/404")
-
-		if self.request.arguments != None:
-			data = binaryToString(self.request.arguments) #dict value byla binarne a nesla poslat jako param
-			response = await get_request_with_params(createUrl(index, dbHndlr.readTableRows("apis")) + dbHndlr.readTableRows("apis")[index][0] + "/" + parsed[1], data)
-		else:
-			response = await get_request(createUrl(index, dbHndlr.readTableRows("apis")) + dbHndlr.readTableRows("apis")[index][0] + "/" + parsed[1])
+		
+		params = (
+    		('params', json.dumps({
+					"token": createToken(self),
+					"data": binaryToString(self.request.arguments) #dict value byla binarne a nesla poslat jako param
+					})),
+		)
+		response = await get_request_with_params_and_headers(createUrl(dbHndlr.readTableRows("apis")[index]) + parsed[0] + '/' + parsed[1],{
+    		'accept': 'application/json',
+		},params)
 		self.write(response)
 
 @route('/ui/(.*)')
@@ -70,7 +83,7 @@ class UserInterface(tornado.web.RequestHandler):
 			if len(parsed) == 1:
 				parsed.insert(1, "264")
 
-			response = await get_request(createUrl(index, dbHndlr.readTableRows("uis")) + dbHndlr.readTableRows("uis")[index][0] + "/" + parsed[1])
+			response = await get_request(createUrl(dbHndlr.readTableRows("uis")[index]) + parsed[0]  + '/' + parsed[1])
 			self.write(response)
 
 @route('/(.*)')

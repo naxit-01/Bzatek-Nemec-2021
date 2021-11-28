@@ -17,6 +17,6 @@ def binaryToString(binaryDict):
 		stringDict[key] = str(value)
 	return stringDict
 
-def createUrl(index, table):
+def createUrl(data):
 	# 2 je umisteni destination_ip v databazi, 3 je port
-	return "http://" + table[index][2] + ":" + str(table[index][3]) + '/'
+	return "http://" + data[2] + ":" + str(data[3]) + '/' 
