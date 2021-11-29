@@ -24,8 +24,8 @@ def createToken(self):
 	if current_user(self)['UserType']=='admin': return "asdfadmin"
 	if current_user(self)['UserType']=='teacher': return "asdfteacher"
 	if current_user(self)['UserType']=='student': return "asdfstudent"
+	#vyresit cookies pak prepsat default return na None
 	return "asdfadmin"
-
 
 admin_route('/admin', "adminpage.html", dbHndlr)
 
@@ -39,20 +39,20 @@ class RootHandler(tornado.web.RequestHandler):
 			authenticate(self,None, dbHndlr)
 		else:
 			print("Logged in as: " + current_user(self)['UserID'] + current_user(self)['UserType'])
-		url="http://127.0.0.1:9999/ui/student/"+str((current_user)(self)['id'])
-		print(url)
+		url="http://127.0.0.1:9999/ui/"+(current_user)(self)['UserType']+"/"+(current_user)(self)['UserID']
 		self.redirect(url)
 
 @route('/api/(.*)')
 class ApplicationProgrammingInterface(tornado.web.RequestHandler):
 	async def get(self,uri):
 		if not current_user(self)['UserID']:
-			""" predelat request"""
-			user = json.loads(await get_request('http://127.0.0.1:9996/current_user'))
+			#vyresit cookies pak prepsat default return v createtoken
+			'''user = json.loads(await get_request('http://127.0.0.1:9996/current_user'))
 			self.set_secure_cookie("mycookie",user["mycookie"])
 			self.set_secure_cookie("UserID",user["id"])
-			self.set_secure_cookie("UserType2",user["type"])
-		
+			self.set_secure_cookie("UserType2",user["type"])'''
+			
+			'''authenticate(self,"apis/" + uri, dbHndlr)'''
 		
 		parsed = uri.split("/")
 		index = dbHndlr.findIndex(parsed[0], "apis")
@@ -85,9 +85,10 @@ class UserInterface(tornado.web.RequestHandler):
 				print("findIndex: Could not find page in database.")
 				self.redirect("/404")
 			
-			# pouzit id v cookie a smazat(prepsat) nasledujici
 			if len(parsed) == 1:
-				parsed.insert(1, "264")
+				parsed.insert(1, str(current_user(self)['UserID']))
+			elif parsed[1] == '':
+				parsed.insert(1, str(current_user(self)['UserID']))
 
 			response = await get_request(createUrl(dbHndlr.readTableRows("uis")[index]) + parsed[0]  + '/' + parsed[1])
 			self.write(response)

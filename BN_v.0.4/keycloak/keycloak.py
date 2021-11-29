@@ -14,6 +14,7 @@ class mainPage(tornado.web.RequestHandler):
 	def get(self, uri):
             if(uri!='current_user'):
 	            self.render("templates/loginPage.html")
+				
 
 	def post(self, uri):
 		#Setting up cookie

@@ -4,7 +4,6 @@ from .tornroutes import *
 from .database import *
 
 def authenticate(self, uri, dbHndlr):
-	# 4 je keycloak, keycloak musi byt v paths nebo zmenit zde
 	authID=dbHndlr.findIndex("keycloak", "paths")
 	if uri == None:
 		self.redirect(dbHndlr.readTableRows("paths")[authID][2] + ":" + str(dbHndlr.readTableRows("paths")[authID][3]))
