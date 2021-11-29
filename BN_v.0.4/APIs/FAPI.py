@@ -29,13 +29,22 @@ def root(params: Optional[str] = Query(None, max_length=50)):
 
 @app.get('/student/{student_id}')
 def student(student_id,params: Optional[str] = Query(None, max_length=50)):
-    print("asdsaddsadsadsasdsda")
     data = json.loads(params)
     if authorize(data['token'])=='admin' or authorize(data['token'])=='teacher' or authorize(data['token'])=='student':
         return {
             "type": 'student',
             "id": student_id,
             "data": 'some data about student'}
+    return False
+
+@app.get('/teacher/{teacher_id}')
+def student(teacher_id,params: Optional[str] = Query(None, max_length=50)):
+    data = json.loads(params)
+    if authorize(data['token'])=='admin' or authorize(data['token'])=='teacher' or authorize(data['token'])=='student':
+        return {
+            "type": 'teacher',
+            "id": teacher_id,
+            "data": 'some data about teacher'}
     return False
 
 @app.get('/rozvrh/{group_id}')

@@ -8,19 +8,22 @@ dbHndlr=DBHandler(os.path.join(os.path.dirname(__file__), "static/database.db"))
 
 def current_user(self):
 	#Returns None if user isnt authenticated by a cookie
-	user={
-		'mycookie':self.get_cookie("mycookie"),
-		'id':self.get_cookie("UserID"),
-		'type':self.get_cookie("UserType")
+	try: user={
+		'mycookie':self.get_secure_cookie("mycookie").decode('utf8'), 
+		'UserID':self.get_secure_cookie("UserID").decode('utf8'),
+		'UserType':self.get_secure_cookie("UserType").decode("utf-8")
+	}
+	except: user={
+		'mycookie':self.get_secure_cookie("mycookie"), 
+		'UserID':self.get_secure_cookie("UserID"),
+		'UserType':self.get_secure_cookie("UserType")
 	}
 	return user
 
 def createToken(self):
-	if current_user(self)['type']=='admin': return "asdfadmin"
-	if current_user(self)['type']=='teacher': return "asdfteacher"
-	if current_user(self)['type']=='student': return "asdfstudent"
-
-	#!!!! vyresit cookie u api
+	if current_user(self)['UserType']=='admin': return "asdfadmin"
+	if current_user(self)['UserType']=='teacher': return "asdfteacher"
+	if current_user(self)['UserType']=='student': return "asdfstudent"
 	return "asdfadmin"
 
 
@@ -32,22 +35,25 @@ class RootHandler(tornado.web.RequestHandler):
 		'''
 		Zjistit prihlaseni, pokud neni hodit na keycloak, pokud je nacist default stranku (plati jen pro root)
 		'''
-		if not current_user(self)['id']:
+		if not current_user(self)['UserID']:
 			authenticate(self,None, dbHndlr)
 		else:
-			print("Logged in as: " + self.get_cookie("UserID") + self.get_cookie("UserType"))
-		
-		self.redirect("http://127.0.0.1:9999/ui/student/"+str(current_user)(self)['id'])
+			print("Logged in as: " + current_user(self)['UserID'] + current_user(self)['UserType'])
+		url="http://127.0.0.1:9999/ui/student/"+str((current_user)(self)['id'])
+		print(url)
+		self.redirect(url)
 
 @route('/api/(.*)')
 class ApplicationProgrammingInterface(tornado.web.RequestHandler):
 	async def get(self,uri):
-		'''
-		Nema cookie, protoze neni user, ale ui server s jinou ip, autentizovat pres keycloak
-		!!!! vyresit cookie
-		if not current_user(self):
-			authenticate(self,"api/" + uri)'''
-
+		if not current_user(self)['UserID']:
+			""" predelat request"""
+			user = json.loads(await get_request('http://127.0.0.1:9996/current_user'))
+			self.set_secure_cookie("mycookie",user["mycookie"])
+			self.set_secure_cookie("UserID",user["id"])
+			self.set_secure_cookie("UserType2",user["type"])
+		
+		
 		parsed = uri.split("/")
 		index = dbHndlr.findIndex(parsed[0], "apis")
 			
@@ -69,7 +75,7 @@ class ApplicationProgrammingInterface(tornado.web.RequestHandler):
 @route('/ui/(.*)')
 class UserInterface(tornado.web.RequestHandler):
 	async def get(self,uri):
-		if not current_user(self)['id']:
+		if not current_user(self)['UserID']:
 			authenticate(self,"ui/" + uri, dbHndlr)
 		else:
 			parsed = uri.split("/")
@@ -97,7 +103,8 @@ application = tornado.web.Application(
 	route.get_routes(),
 	{'some app': 'settings'},
  	static_path=os.path.join(os.path.dirname(__file__), "static"), 
-	template_path=os.path.join(os.path.dirname(__file__), "templates") 
+	template_path=os.path.join(os.path.dirname(__file__), "templates"),
+	cookie_secret="__TODO:_GENERATE_YOUR_OWN_RANDOM_VALUE_HERE__" 
 	)
 
 if __name__ == "__main__":

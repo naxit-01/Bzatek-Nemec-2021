@@ -1,12 +1,11 @@
 import tornado.ioloop
 import tornado.web
 from moduls import * # Contains a module for asynchronous requests
-from tornroutes import route, prototype_route
 
 g_port=9998
 g_router="http://127.0.0.1:9999"
 
-@route('/(.*)')
+
 class mainPage(tornado.web.RequestHandler):
 	async def get(self, uri):
 		'''Ask router for api data'''
