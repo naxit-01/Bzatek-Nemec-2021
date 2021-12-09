@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h1>Rozvrh</h1>
+
+<p>Prvni hodinu mas: </p>
+<script language = "javascript" type = "text/javascript">
+var xmlHttp = new XMLHttpRequest();
+xmlHttp.open( "GET", "https://jsonplaceholder.typicode.com/todos/1", false );
+xmlHttp.send( null );
+document.write(xmlHttp.responseText);
+</script>
+<noscript>Sorry, your browser does not support JavaScript!</noscript>
+
+<p>Potom nasleduje (funguje na localhost): </p>
+<script language = "javascript" type = "text/javascript">
+var xmlHttp = new XMLHttpRequest();
+xmlHttp.open( "GET", "http://localhost:9999/api/teacher/23", false );
+xmlHttp.send( null );
+document.write(xmlHttp.responseText);
+</script>
+
+<p>Potom nasleduje (funguje na 127.0.0.1): </p>
+<script language = "javascript" type = "text/javascript">
+var xmlHttp = new XMLHttpRequest();
+xmlHttp.open( "GET", "http://127.0.0.1:9999/api/teacher/23", false );
+xmlHttp.send( null );
+document.write(xmlHttp.responseText);
+</script>
+
+</body>
+</html>

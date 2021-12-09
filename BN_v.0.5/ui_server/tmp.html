@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h1>Uzivatelsky ucet</h1>
+
+<p>Data: </p>
+<script language = "javascript" type = "text/javascript">
+var xmlHttp = new XMLHttpRequest();
+xmlHttp.open( "GET",
+"http://127.0.0.1:9999/api/teacher/23", false );
+xmlHttp.send( null );
+document.write(xmlHttp.responseText);
+</script>
+<noscript>Sorry, your browser does not support JavaScript!</noscript>
+
+</body>
+</html>
