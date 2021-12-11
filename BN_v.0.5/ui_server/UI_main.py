@@ -1,50 +1,64 @@
 import tornado.ioloop
 import tornado.web
-from moduls import * # Contains a module for asynchronous requests
+import json
 
 g_port=9998
 g_router="http://127.0.0.1:9999"
 
+def createHtmlPage(firstPart, getUrl, secondPart):
+	f = open("template/tmp.html", "w")
 
-'''class mainPage(tornado.web.RequestHandler):
-	async def get(self, uri):
-		#Ask router for api data
+	with open(firstPart, "r") as infile: #copy infile into f
+		f.write(infile.read())
+	f.write(getUrl)
+	with open(secondPart, "r") as infile:
+		f.write(infile.read())
 
-		parsed = uri.split("/")
-		if parsed[0] == "rozvrh":
-			data = {
-				'datum':"1.1.2022",
-				'type':"prednasky"
-			}
-			response = await get_request_with_params(g_router + "/api/" + uri, data)
-			self.write("Data o uzivateli: " + response)
-		else:
-			response = await get_request(g_router + "/api/" + uri)
-			self.write("Data o uzivateli: " + response)'''
+	f.close()
+
+def createHtmlPageParams(firstPart, getUrl, secondPart, params, thirdPart):
+	f = open("template/tmp.html", "w")
+
+	with open(firstPart, "r") as infile: #copy infile into f
+		f.write(infile.read())
+	f.write(getUrl)
+	with open(secondPart, "r") as infile:
+		f.write(infile.read())
+	f.write(str(params))
+	with open(thirdPart, "r") as infile:
+		f.write(infile.read())
+
+	f.close()
 
 class mainPage(tornado.web.RequestHandler):
 	def get(self, uri):
-		#self.render("rozvrh.html")
-		
-		f = open("tmp.html", "w")
+		'''Render page with javascript get requests to api (through router)'''
+		if self.cookies:
+			print("I received some cookies from the scout girls.")
+			print(self.get_secure_cookie("UserType"), self.get_secure_cookie("UserID"))
 
-		with open("page_zac.html", "r") as infile: #copy infile into f
-			for line in infile:
-				f.write(line)
-		f.write('"http://127.0.0.1:9999/api/teacher/23')
-		with open("page_kon.html", "r") as infile:
-			f.write(infile.read())
-		
+		parsed = uri.split("/")
+		url = str('"' + g_router + "/api/" + uri)
+
+		if parsed[0] == "rozvrh":
+			data = (("params", json.dumps({
+				'datum':"1.1.2022",
+				'type':"prednasky"
+			})))
+
+			createHtmlPageParams("template/page1of2or3.html", url, "template/page2of3.html", data, "template/page3of3.html")
+			f = open("template/tmp.html") # Opened to get the current (latest) version, with simple render he used the file created after first run on every attempt
+			self.write(f.read())
+		else:
+			createHtmlPage("template/page1of2or3.html", url, "template/page2of2.html")
+			f = open("template/tmp.html") # Opened to get the current (latest) version, with simple render he used the file created after first run on every attempt
+			self.write(f.read())
+
 		f.close()
-
-		self.render("tmp.html")
-
-'''with open("page_kon.html", "r") as infile:
-			f.write(infile.read())'''
 
 application = tornado.web.Application([
     (r"/(.*)", mainPage)
-])
+], cookie_secret="__TODO:_GENERATE_YOUR_OWN_RANDOM_VALUE_HERE__")
 
 if __name__ == "__main__":
 	application.listen(g_port)
