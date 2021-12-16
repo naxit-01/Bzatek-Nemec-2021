@@ -15,7 +15,6 @@ class mainPage(tornado.web.RequestHandler):
             if(uri!='current_user'):
 	            self.render("templates/loginPage.html")
 				
-
 	def post(self, uri):
 		#Setting up cookie
 		if not self.get_secure_cookie("mycookie"):

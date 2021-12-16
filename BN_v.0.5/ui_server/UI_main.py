@@ -1,31 +1,32 @@
 import tornado.ioloop
 import tornado.web
 import json
+import os
 
 g_port=9998
 g_router="http://127.0.0.1:9999"
 
 def createHtmlPage(firstPart, getUrl, secondPart):
-	f = open("template/tmp.html", "w")
+	f = open(os.path.join(os.path.dirname(__file__),"template/tmp.html"), "w")
 
-	with open(firstPart, "r") as infile: #copy infile into f
+	with open(os.path.join(os.path.dirname(__file__),firstPart),"r") as infile: #copy infile into f
 		f.write(infile.read())
 	f.write(getUrl)
-	with open(secondPart, "r") as infile:
+	with  open(os.path.join(os.path.dirname(__file__),secondPart),"r") as infile:
 		f.write(infile.read())
 
 	f.close()
 
 def createHtmlPageParams(firstPart, getUrl, secondPart, params, thirdPart):
-	f = open("template/tmp.html", "w")
+	f = open(os.path.join(os.path.dirname(__file__),"template/tmp.html"), "w")
 
-	with open(firstPart, "r") as infile: #copy infile into f
+	with open(os.path.join(os.path.dirname(__file__),firstPart),"r") as infile: #copy infile into f
 		f.write(infile.read())
 	f.write(getUrl)
-	with open(secondPart, "r") as infile:
+	with open(os.path.join(os.path.dirname(__file__),secondPart),"r") as infile:
 		f.write(infile.read())
 	f.write(str(params))
-	with open(thirdPart, "r") as infile:
+	with open(os.path.join(os.path.dirname(__file__),thirdPart),"r") as infile:
 		f.write(infile.read())
 
 	f.close()
@@ -47,18 +48,19 @@ class mainPage(tornado.web.RequestHandler):
 			})))
 
 			createHtmlPageParams("template/page1of2or3.html", url, "template/page2of3.html", data, "template/page3of3.html")
-			f = open("template/tmp.html") # Opened to get the current (latest) version, with simple render he used the file created after first run on every attempt
+			f =  open(os.path.join(os.path.dirname(__file__),"template/tmp.html")) # Opened to get the current (latest) version, with simple render he used the file created after first run on every attempt
 			self.write(f.read())
 		else:
 			createHtmlPage("template/page1of2or3.html", url, "template/page2of2.html")
-			f = open("template/tmp.html") # Opened to get the current (latest) version, with simple render he used the file created after first run on every attempt
+			f =  open(os.path.join(os.path.dirname(__file__),"template/tmp.html")) # Opened to get the current (latest) version, with simple render he used the file created after first run on every attempt
 			self.write(f.read())
 
 		f.close()
 
 application = tornado.web.Application([
-    (r"/(.*)", mainPage)
-], cookie_secret="__TODO:_GENERATE_YOUR_OWN_RANDOM_VALUE_HERE__")
+    (r"/(.*)", mainPage),
+], 
+	cookie_secret="__TODO:_GENERATE_YOUR_OWN_RANDOM_VALUE_HERE__")
 
 if __name__ == "__main__":
 	application.listen(g_port)

@@ -1,0 +1,38 @@
+version: '3'
+
+services:
+  tornRouter:
+    image: tornado_router
+    build:
+      context: ./tornRouter
+    ports:
+      - 9999:9999
+    volumes:
+      - C:\ProgramData\Docker:/var/lib/docker/volumes/
+  
+  keycloak:
+    image: keycloak
+    build:
+      context: ./keycloak
+    ports:
+      - 9996:9996
+    volumes:
+      - C:\ProgramData\Docker:/var/lib/docker/volumes/
+  
+  fAPI:
+    image: fastapi
+    build:
+      context: ./APIs
+    ports:
+      - 8000:8000
+    volumes:
+      - C:\ProgramData\Docker:/var/lib/docker/volumes/
+
+  uiTorn:
+    image: ui_tornado 
+    build:
+      context: ./ui_server
+    ports:
+      - 9998:9998
+    volumes:
+      - C:\ProgramData\Docker:/var/lib/docker/volumes/

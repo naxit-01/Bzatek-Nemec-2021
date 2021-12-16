@@ -7,9 +7,8 @@ from typing import Optional
 app = FastAPI()
 
 @app.get("/")
-def root(params: Optional[str] = Query(None, max_length=50)):
-    data = json.loads(params)
-    if authorize(data['token'])=='admin' or authorize(data['token'])=='teacher' or authorize(data['token'])=='student':
+def root(params: Optional[str] = Query(None, max_length=50), UserID: Optional[str] = Cookie(None), UserType: Optional[str] = Cookie(None)):
+    if UserType == "student" or UserType == "teacher":
         return {"hello world": 'root'}
     return False
 
@@ -64,10 +63,10 @@ def timeSchedule(group_id,params: Optional[str] = Query(None, max_length=50)):
     return False
 
 @app.get('/group/{group_id}')
-def group(group_id,params: Optional[str] = Query(None, max_length=50)):
+def group(group_id,params: Optional[str] = Query(None, max_length=50), UserID: Optional[str] = Cookie(None), UserType: Optional[str] = Cookie(None)):
     '''Old version'''
     data = json.loads(params)
-    if authorize(data['token'])=='admin' or authorize(data['token'])=='teacher' or authorize(data['token'])=='student':
+    if UserType != "teacher":
         return {
             "type":"group",
             "id": group_id,
