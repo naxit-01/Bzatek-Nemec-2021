@@ -13,5 +13,5 @@ RUN python -m pip install -r requirements.txt
 WORKDIR /main
 COPY . /main
 
-EXPOSE 9999
+EXPOSE 8000
 CMD [ "python", "./FAPI.py" ]
