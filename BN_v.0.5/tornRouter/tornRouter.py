@@ -55,7 +55,7 @@ class UserInterface(tornado.web.RequestHandler):
 				response = await get_request_with_cookies(createUrl(dbHndlr.readTableRows("uis")[index]) + parsed[0]  + '/' + parsed[1], self.cookies)
 				self.write(response)
 			except Exception as e:
-				print("Router:UserIterface:GetRequest: error: " + e)
+				print("Router:UserIterface:GetRequest: error: " + str(e))
 				self.write("Can not connect to external server.")
 
 @route('/api/(.*)')
@@ -86,8 +86,8 @@ class ApplicationProgrammingInterface(tornado.web.RequestHandler):
 			try:
 				response = await get_request_with_params_and_cookies(createUrl(dbHndlr.readTableRows("apis")[index]) + parsed[0] + '/' + parsed[1], params, cookies) #Secure with self.cookies
 				self.write(response)
-			except exception as e:
-				print("Router:ApplicationProgrammingInterface:GetRequest: error: " + e)
+			except Exception as e:
+				print("Router:ApplicationProgrammingInterface:GetRequest: error: " + str(e))
 				self.write("Can not connect to external server.")
 
 @route('/(.*)')
