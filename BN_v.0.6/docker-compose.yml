@@ -1,0 +1,54 @@
+version: '3'
+
+services:
+  tornRouter:
+    image: tornado_router
+    build:
+      context: ./tornRouter
+    ports:
+      - 9999:80
+    volumes:
+      - C:\ProgramData\Docker:/var/lib/docker/volumes/
+  
+  keycloak:
+    image: keycloak
+    build:
+      context: ./keycloak
+    expose:
+      - "9996"
+    environment:
+      - VIRTUAL_HOST=keycloak.localhost
+      - VIRTUAL_PORT=9996
+    volumes:
+      - C:\ProgramData\Docker:/var/lib/docker/volumes/
+  
+  fAPI:
+    image: fastapi
+    build:
+      context: ./APIs
+    expose:
+      - "8000"
+    environment:
+      - VIRTUAL_HOST=fapi.localhost
+      - VIRTUAL_PORT=8000
+    volumes:
+      - C:\ProgramData\Docker:/var/lib/docker/volumes/
+
+  uiTorn:
+    image: ui_tornado 
+    build:
+      context: ./ui_server
+    expose:
+      - "9998"
+    environment:
+      - VIRTUAL_HOST=ui.localhost
+      - VIRTUAL_PORT=9998
+    volumes:
+      - C:\ProgramData\Docker:/var/lib/docker/volumes/
+
+  nginx-proxy:
+    image: nginxproxy/nginx-proxy
+    ports:
+      - "80:80"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro

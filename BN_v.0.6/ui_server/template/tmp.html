@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head><link rel="shortcut icon" href="#"></head>
+<body>
+
+<h1>Uzivatelsky ucet</h1>
+
+<p>Data: </p>
+<script language = "javascript" type = "text/javascript">
+var xmlHttp = new XMLHttpRequest();
+let url = new URL(
+"http://127.0.0.1:9999/api/student/878");
+xmlHttp.open( "GET", url, false );
+xmlHttp.send( null );
+document.write(xmlHttp.responseText);
+</script>
+<noscript>Sorry, your browser does not support JavaScript!</noscript>
+
+</body>
+</html>
