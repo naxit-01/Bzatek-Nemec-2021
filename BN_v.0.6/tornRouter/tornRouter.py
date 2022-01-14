@@ -1,7 +1,7 @@
 import os
 from moduls import *
 
-g_port = 80
+g_port = 9999
 dbHndlr=DBHandler(os.path.join(os.path.dirname(__file__), "static/database.db"))
 
 def current_user(self):
@@ -87,11 +87,7 @@ class ApplicationProgrammingInterface(tornado.web.RequestHandler):
 				response = await get_request_with_params_and_cookies(createUrl(dbHndlr.readTableRows("apis")[index]) + parsed[0] + '/' + parsed[1], params, cookies) #Secure with self.cookies
 				self.write(response)
 			except Exception as e:
-<<<<<<< HEAD
 				print("Router:ApplicationProgrammingInterface:GetRequest: error: " + e)
-=======
-				print("Router:ApplicationProgrammingInterface:GetRequest: error: " + str(e))
->>>>>>> fbc3864c31d7dc2e88cc3cc7b1cc1c8074c50be3
 				self.write("Can not connect to external server.")
 
 @route('/(.*)')

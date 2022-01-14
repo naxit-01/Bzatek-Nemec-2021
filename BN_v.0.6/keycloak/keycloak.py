@@ -2,7 +2,7 @@ import tornado.ioloop
 import tornado.web
 
 g_port=9996
-g_router="http://127.0.0.1:80" # Mel by mit v databazi pro registrovaneho clienta
+g_router="http://127.0.0.1:9999" # Mel by mit v databazi pro registrovaneho clienta
 
 def binaryToString(binaryDict):
 	stringDict = {}

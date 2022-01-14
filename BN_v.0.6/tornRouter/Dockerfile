@@ -13,5 +13,5 @@ RUN python -m pip install -r requirements.txt
 WORKDIR /main
 COPY . /main
 
-EXPOSE 80
+EXPOSE 9999
 CMD [ "python", "./tornRouter.py" ]
