@@ -6,6 +6,7 @@ from typing import Optional
 
 app = FastAPI()
 
+
 @app.get("/")
 def root(params: Optional[str] = Query(None, max_length=50), UserID: Optional[str] = Cookie(None), UserType: Optional[str] = Cookie(None)):
     if UserType == "student" or UserType == "teacher":
