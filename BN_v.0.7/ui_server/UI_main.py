@@ -5,7 +5,7 @@ import os
 
 g_port=9998
 #g_router="http://127.0.0.1:80"
-g_router="http://172.16.238.10:9999"
+g_router=""
 def createHtmlPage(firstPart, getUrl, secondPart):
 	f = open(os.path.join(os.path.dirname(__file__),"template/tmp.html"), "w")
 
@@ -39,8 +39,8 @@ class mainPage(tornado.web.RequestHandler):
 			print(self.get_secure_cookie("UserType"), self.get_secure_cookie("UserID"))
 
 		parsed = uri.split("/")
-		#url = str('"' + g_router + "/api/" + uri)
-		url = str('"' + g_router + "/" + uri)
+		url = str('"' + g_router + "/api/" + uri)
+		#url = str('"' + g_router + "/" + uri)
 		if parsed[0] == "rozvrh":
 			data = (("params", json.dumps({
 				'datum':"1.1.2022",

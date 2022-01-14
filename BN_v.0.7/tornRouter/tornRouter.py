@@ -84,7 +84,7 @@ class ApplicationProgrammingInterface(tornado.web.RequestHandler):
 			cookies = {"UserType": current_user(self)['UserType'], "UserID": current_user(self)['UserID']} #For sending unsecure cookies, dont know how to decode them in fastapi
 			print("HHOHOHOOHHOHOO"+str(createUrl(dbHndlr.readTableRows("apis")[index]) + parsed[0] + '/' + parsed[1]))
 			try:
-				response = await get_request_with_params_and_cookies(createUrl(dbHndlr.readTableRows("apis")[index]) + parsed[0] + '/' + parsed[1], params, cookies) #Secure with self.cookies
+				response = await get_request_with_params_and_cookies(createUrl(dbHndlr.readTableRows("apis")[index])+"api/" + parsed[0] + '/' + parsed[1], params, cookies) #Secure with self.cookies
 				self.write(response)
 			except Exception as e:
 				print("Router:ApplicationProgrammingInterface:GetRequest: error: " + str(e))

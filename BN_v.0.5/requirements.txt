@@ -1,4 +1,0 @@
-uvicorn
-fastapi
-tornado
-aiohttp

@@ -8,9 +8,6 @@ services:
     container_name: key_cloak
     build:
       context: ./keycloak
-    networks:
-      uiuo_net: 
-        ipv4_address: 172.16.238.40
     ports:
       - 9996:9996
     restart: on-failure
@@ -21,9 +18,6 @@ services:
     container_name: ui_server
     build:    
       context: ./ui_server
-    networks:
-      uiuo_net: 
-        ipv4_address: 172.16.238.30
     ports:
       - 9998:9998
     restart: on-failure
@@ -34,9 +28,6 @@ services:
     container_name: fast_api
     build:
       context: ./APIs
-    networks:
-      uiuo_net: 
-        ipv4_address: 172.16.238.20    
     ports:
       - 8000:8000
     restart: on-failure
@@ -47,19 +38,6 @@ services:
     container_name: torn_router
     build:
       context: ./tornRouter
-    networks:
-      uiuo_net: 
-        ipv4_address: 172.16.238.10
     ports:
       - 9999:9999
     restart: on-failure
-    
-networks:
-  uiuo_net:
-    driver: bridge
-    enable_ipv6: false
-    ipam:
-      driver: default
-      config:
-        - subnet: 172.16.238.0/24
-          gateway: 172.16.238.1

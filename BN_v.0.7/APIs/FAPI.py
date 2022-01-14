@@ -5,14 +5,15 @@ import os
 from typing import Optional
 
 app = FastAPI()
+apiapp = FastAPI()
 
-@app.get("/")
+@apiapp.get("/")
 def root(params: Optional[str] = Query(None, max_length=50), UserID: Optional[str] = Cookie(None), UserType: Optional[str] = Cookie(None)):
     if UserType == "student" or UserType == "teacher":
         return {"hello world": 'root'}
     return False
 
-@app.get('/student/{student_id}')
+@apiapp.get('/student/{student_id}')
 def student(student_id,params: Optional[str] = Query(None, max_length=50), UserID: Optional[str] = Cookie(None), UserType: Optional[str] = Cookie(None)):
 	if UserType != "student" and UserType != "teacher": return "Not authorized for this data."
 	else:
@@ -27,7 +28,7 @@ def student(student_id,params: Optional[str] = Query(None, max_length=50), UserI
 			"id": student_id,
 			"data": 'some data about student'}
 
-@app.get('/teacher/{teacher_id}')
+@apiapp.get('/teacher/{teacher_id}')
 def student(teacher_id,params: Optional[str] = Query(None, max_length=50), UserID: Optional[str] = Cookie(None), UserType: Optional[str] = Cookie(None)):
 	if UserType != "teacher":
 		return "Not authorized for this data."
@@ -43,7 +44,7 @@ def student(teacher_id,params: Optional[str] = Query(None, max_length=50), UserI
 
 	return False
 
-@app.get('/rozvrh/{group_id}')
+@apiapp.get('/rozvrh/{group_id}')
 def timeSchedule(group_id,params: Optional[str] = Query(None, max_length=50)):
     print(params)
     #data = json.loads(params)
@@ -59,7 +60,7 @@ def timeSchedule(group_id,params: Optional[str] = Query(None, max_length=50)):
 
     return False
 
-@app.get('/group/{group_id}')
+@apiapp.get('/group/{group_id}')
 def group(group_id,params: Optional[str] = Query(None, max_length=50), UserID: Optional[str] = Cookie(None), UserType: Optional[str] = Cookie(None)):
     '''Old version'''
     data = json.loads(params)
@@ -71,7 +72,7 @@ def group(group_id,params: Optional[str] = Query(None, max_length=50), UserID: O
         }
     return False
 
-@app.get('/reset/{host}/{port}')
+@apiapp.get('/reset/{host}/{port}')
 async def reset(host,port,params: Optional[str] = Query(None, max_length=50), UserID: Optional[str] = Cookie(None), UserType: Optional[str] = Cookie(None)):
     #Can log admin ID, who changed the adress
     if UserType == "admin":
@@ -87,7 +88,9 @@ async def reset(host,port,params: Optional[str] = Query(None, max_length=50), Us
         return True
     return False
 
-if __name__ == "__main__":
+app.mount("/api", apiapp)
+
+if __name__ == "__main__": 
     with open(os.path.join(os.path.dirname(__file__), "settings.txt")) as json_file:
         data = json.load(json_file)
-        uvicorn.run(app, host=data['host'], port=int(data['port']))
+        uvicorn.run(app, host=data['host'], port=int(data['port'])) #prehodit do docker file

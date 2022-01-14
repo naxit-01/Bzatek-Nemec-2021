@@ -1,7 +1,16 @@
-");
-xmlHttp.open( "GET", url, false );
-xmlHttp.send( null );
-document.write(xmlHttp.responseText);
+").then(response=>response.text()).then(data=>document.write(data))
+
+}
+testdata()
+
+//");
+
+
+//xmlHttp.open( "GET", url, false );
+//xmlHttp.send( null );
+//document.write(xmlHttp.responseText);
+
+
 </script>
 <noscript>Sorry, your browser does not support JavaScript!</noscript>
 
