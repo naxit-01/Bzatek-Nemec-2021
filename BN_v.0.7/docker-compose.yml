@@ -9,17 +9,17 @@ services:
     build:
       context: ./keycloak
     ports:
-      - 9996:9996
+      - "9996:9996"
     restart: on-failure
 
-  # generates ui server
+  # generates ui_server
   ui_server:
     image: ui_server
     container_name: ui_server
     build:    
       context: ./ui_server
-    ports:
-      - 9998:9998
+    expose:
+      - "9998"
     restart: on-failure
 
   # generates fastapi
@@ -28,8 +28,8 @@ services:
     container_name: fast_api
     build:
       context: ./APIs
-    ports:
-      - 8000:8000
+    expose:
+      - "8000"
     restart: on-failure
   
   # generates keycloak

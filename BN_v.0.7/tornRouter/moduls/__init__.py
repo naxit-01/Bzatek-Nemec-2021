@@ -6,9 +6,9 @@ from .database import *
 def authenticate(self, uri, dbHndlr):
 	authID=dbHndlr.findIndex("keycloak", "paths")
 	if uri == None:
-		self.redirect(dbHndlr.readTableRows("paths")[authID][2] + ":" + str(dbHndlr.readTableRows("paths")[authID][3]))
+		self.redirect("http://" +dbHndlr.readTableRows("paths")[authID][2] + ":" + str(dbHndlr.readTableRows("paths")[authID][3]))
 	else:
-		self.redirect(dbHndlr.readTableRows("paths")[authID][2] + ":" + str(dbHndlr.readTableRows("paths")[authID][3]) + "/" + uri)
+		self.redirect("http://" +dbHndlr.readTableRows("paths")[authID][2] + ":" + str(dbHndlr.readTableRows("paths")[authID][3]) + "/" + uri)
 
 def binaryToString(binaryDict):
 	stringDict = {}

@@ -90,6 +90,7 @@ async def reset(host,port,params: Optional[str] = Query(None, max_length=50), Us
 
 app.mount("/api", apiapp)
 
+
 if __name__ == "__main__": 
     with open(os.path.join(os.path.dirname(__file__), "settings.txt")) as json_file:
         data = json.load(json_file)
