@@ -9,7 +9,7 @@ Our main part of the project. It uses python/tornado module, tornroutes: <extern
 It contains three main routes:\
     1. UI: Redirects to the main graphical page, that renders html. The UI server is supposed to contain a GET to API data server.\
     2. API: Returnes data based on URI or specified GET parameters.\
-    3. Admin: Enables to configure IP addresses and ports. For this purpose, a local sqlite database is used.\
+    3. Admin: Enables to configure IP addresses and ports. For this purpose, a local sqlite database can be configured at http://localhost:9999/admin .\
 
 ## UI (ui_server folder)
 Also written in python/tornado. Python is used to generate usable html file, which also contains javascript. This way, a request to API can be performed on the front end. I (writing this paragraph) have made the html/javascript part and I am not proud of it. 
