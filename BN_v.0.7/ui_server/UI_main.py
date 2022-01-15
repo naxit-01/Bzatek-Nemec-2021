@@ -49,10 +49,6 @@ class mainPage(tornado.web.RequestHandler):
 		parsed = uri.split("/")
 		url = str(g_router + "/api/" + uri)
 		if parsed[0] == "rozvrh":
-			'''data = (("params", json.dumps({
-				'datum':"1.1.2022",
-				'type':"prednasky"
-			})))'''
 			data = (json.dumps({
 				'datum':"1.1.2022",
 				'type':"prednasky"
