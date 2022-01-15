@@ -14,4 +14,4 @@ WORKDIR /main
 COPY . /main
 
 EXPOSE 8000
-CMD [ "python", "./FAPI.py" ]
+CMD python -m uvicorn FAPI:app --host 0.0.0.0 --port 8000

@@ -92,6 +92,4 @@ app.mount("/api", apiapp)
 
 
 if __name__ == "__main__": 
-    with open(os.path.join(os.path.dirname(__file__), "settings.txt")) as json_file:
-        data = json.load(json_file)
-        uvicorn.run(app, host=data['host'], port=int(data['port'])) #prehodit do docker file
+    app = FastAPI()
