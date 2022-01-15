@@ -1,5 +1,5 @@
 # Tornado router with example UI and API + simple cookie authentication
-This is a part of a school project. It works on its own, but provides only simple example servers to demonstrate functionality. Complete project is supposed to be a school information system. We focused on the router part, that functions as the only public access point and comunicates with other servers with hidden IPs (keycloak is also public, since it is outsourced). The complete project can be found here: <external repo, hrbolek uo_is>
+This is a part of a school project. It works on its own, but provides only simple example servers to demonstrate functionality. Complete project is supposed to be a school information system. We focused on the router part, that functions as the only public access point and comunicates with other servers with hidden IPs (keycloak is also public, since it is outsourced). The complete project can be found here: <external repo, hrbolek uo_is>\n
 The project is encaplulated into docker container, as per the task assignment. However, if slighly altered, can function without containerization.
 
 ## Router
