@@ -6,7 +6,7 @@ import os
 g_port=9998
 
 g_router=""
-def createHtmlPage(firstPart, getUrl, secondPart):
+def createHtmlPage(firstPart, getUrl, secondPart, body, thirdPart):
 	f = open(os.path.join(os.path.dirname(__file__),"template/tmp.html"), "w")
 
 	with open(os.path.join(os.path.dirname(__file__),firstPart),"r") as infile: #copy infile into f
@@ -14,10 +14,14 @@ def createHtmlPage(firstPart, getUrl, secondPart):
 	f.write(getUrl)
 	with  open(os.path.join(os.path.dirname(__file__),secondPart),"r") as infile:
 		f.write(infile.read())
+	with  open(os.path.join(os.path.dirname(__file__),body),"r") as infile:
+		f.write(infile.read())
+	with  open(os.path.join(os.path.dirname(__file__),thirdPart),"r") as infile:
+		f.write(infile.read())
 
 	f.close()
 
-def createHtmlPageParams(firstPart, getUrl, secondPart, params, thirdPart):
+def createHtmlPageParams(firstPart, getUrl, secondPart, params, thirdPart, body, fourthPart):
 	f = open(os.path.join(os.path.dirname(__file__),"template/tmp.html"), "w")
 
 	with open(os.path.join(os.path.dirname(__file__),firstPart),"r") as infile: #copy infile into f
@@ -27,6 +31,10 @@ def createHtmlPageParams(firstPart, getUrl, secondPart, params, thirdPart):
 		f.write(infile.read())
 	f.write(str(params))
 	with open(os.path.join(os.path.dirname(__file__),thirdPart),"r") as infile:
+		f.write(infile.read())
+	with open(os.path.join(os.path.dirname(__file__),body),"r") as infile:
+		f.write(infile.read())
+	with open(os.path.join(os.path.dirname(__file__),fourthPart),"r") as infile:
 		f.write(infile.read())
 
 	f.close()
@@ -39,18 +47,22 @@ class mainPage(tornado.web.RequestHandler):
 			print(self.get_secure_cookie("UserType"), self.get_secure_cookie("UserID"))
 
 		parsed = uri.split("/")
-		url = str('"' + g_router + "/api/" + uri)
+		url = str(g_router + "/api/" + uri)
 		if parsed[0] == "rozvrh":
-			data = (("params", json.dumps({
+			'''data = (("params", json.dumps({
 				'datum':"1.1.2022",
 				'type':"prednasky"
-			})))
+			})))'''
+			data = (json.dumps({
+				'datum':"1.1.2022",
+				'type':"prednasky"
+			}))
 
-			createHtmlPageParams("template/page1of2or3.html", url, "template/page2of3.html", data, "template/page3of3.html")
+			createHtmlPageParams("template/page1.html", url, "template/page2params.html", data, "template/page3params.html", "template/body.html","template/page3and4params.html")
 			f =  open(os.path.join(os.path.dirname(__file__),"template/tmp.html")) # Opened to get the current (latest) version, with simple render he used the file created after first run on every attempt
 			self.write(f.read())
 		else:
-			createHtmlPage("template/page1of2or3.html", url, "template/page2of2.html")
+			createHtmlPage("template/page1.html", url, "template/page2.html", "template/body.html", "template/page3and4params.html")
 			f =  open(os.path.join(os.path.dirname(__file__),"template/tmp.html")) # Opened to get the current (latest) version, with simple render he used the file created after first run on every attempt
 			self.write(f.read())
 
