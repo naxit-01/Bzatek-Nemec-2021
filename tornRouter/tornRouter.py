@@ -36,7 +36,7 @@ class RootHandler(tornado.web.RequestHandler):
 @route('/ui/(.*)')
 class UserInterface(tornado.web.RequestHandler):
 	async def get(self,uri):
-		'''Comment here'''
+		'''Requests graphical template from UI server and passes it to the browser.'''
 		if not current_user(self)['UserID']:
 			authenticate(self,"ui/" + uri, dbHndlr)
 		else:
@@ -60,7 +60,7 @@ class UserInterface(tornado.web.RequestHandler):
 
 @route('/api/(.*)')
 class ApplicationProgrammingInterface(tornado.web.RequestHandler):
-	'''Comment here'''
+	'''Answers call from javascript to API server, fills data into UI template.'''
 	async def get(self,uri):
 		if not current_user(self)['UserID']:
 			authenticate(self,"api/" + uri, dbHndlr)
